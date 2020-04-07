@@ -54,11 +54,11 @@ void main()
 
 #pragma region Methods
 void PrintResult(Array* numbers, Array* odd, Array* even) {
-	printf("Tum Sayilar\n_____________\n\n");
+	printf("Tum Sayilar\n_____________\n");
 	PrintArray(numbers);
-	printf("\nTek Sayilar\n_____________\n\n");
+	printf("\nTek Sayilar\n_____________\n");
 	PrintArray(odd);
-	printf("\nCift Sayilar\n_____________\n\n");
+	printf("\nCift Sayilar\n_____________\n");
 	PrintArray(even);
 }
 

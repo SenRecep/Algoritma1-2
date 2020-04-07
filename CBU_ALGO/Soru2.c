@@ -26,9 +26,9 @@ typedef struct {
 #pragma endregion
 #pragma region Headers
 void InitializingCarPark(ParkingRegistration*, int, int);
+void InitializingCar(Car*);
 char* AddCar(ParkingRegistration*);
 void AddCars(ParkingRegistration*, Car*);
-void InitializingCar(Car*);
 void ListCar(ParkingRegistration*);
 EntryTime GetCurrentTime();
 void Free(ParkingRegistration*, Car*);
@@ -59,8 +59,7 @@ void InitializingCarPark(ParkingRegistration* pR, int usableCapacity, int Capaci
 }
 
 char* AddCar(ParkingRegistration* pR, Car* car) {
-	Car model;
-	InitializingCar(&model);
+	Car model; InitializingCar(&model);
 	strcpy(model.Color, car->Color); strcpy(model.Plaque, car->Plaque); strcpy(model.Model, car->Model);
 	if (pR->Used >= pR->Capacity)
 		return "Uzgunuz Otopark tamamen dolu\n";
@@ -76,7 +75,7 @@ char* AddCar(ParkingRegistration* pR, Car* car) {
 }
 
 void AddCars(ParkingRegistration* pR, Car* model) {
-	printf("Otoparkimiza Hosgeldiniz\n________________________\n");
+	printf("Otoparkimiza Hosgeldiniz\n____________________________\nEn fazla Renk icin 24 Model icin 24 Plaka icin 11 karakter girisi yapiniz.\n\n");
 	for (unsigned short i = 0; i < pR->UsableCapacity; i++)
 	{
 		printf("%d.Arac bilgilerini giriniz:\n____________________________\n", i + 1);
@@ -88,7 +87,8 @@ void AddCars(ParkingRegistration* pR, Car* model) {
 		scanf("%s", model->Plaque);
 		char* res = AddCar(pR, model);
 		if (strlen(res) > 0) {
-			printf("%s\n", res);
+			printf("\n%sSon eklediginiz arac sisteme eklenememistir.\n", res);
+			system("PAUSE");
 			break;
 		}
 	}
@@ -98,17 +98,15 @@ void InitializingCar(Car* model) {
 	model->Color = (char*)malloc(sizeof(char) * 25);
 	model->Model = (char*)malloc(sizeof(char) * 25);
 	model->Plaque = (char*)malloc(sizeof(char) * 12);
-
 }
 
 void ListCar(ParkingRegistration* pR) {
 	system("cls");
-	printf("%30s%s\n", "", "Otoparkimiza Hosgeldiniz");
+	printf("%31s%s\n", "", "Otoparkimiza Hosgeldiniz");
 	printf("____________________________________________________________________________\n");
 	printf("%-25s %-25s %-12s %s", "RENK", "MODEL", "PLAKA", "GIRIS SAATI\n");
 	printf("____________________________________________________________________________\n");
 	for (size_t i = 0; i < pR->Used; i++)
-	{
 		printf("%-25s %-25s %-12s %d:%d:%d\n",
 			pR->cars[i].Color,
 			pR->cars[i].Model,
@@ -117,16 +115,15 @@ void ListCar(ParkingRegistration* pR) {
 			pR->times[i].M,
 			pR->times[i].S
 		);
-	}
 }
 
 EntryTime GetCurrentTime() {
-	time_t theTime = time(NULL);
-	struct tm* aTime = localtime(&theTime);
+	time_t _time = time(NULL);
+	struct tm* _tm = localtime(&_time);
 	EntryTime Etime;
-	Etime.H = aTime->tm_hour;
-	Etime.M = aTime->tm_min;
-	Etime.S = aTime->tm_sec;
+	Etime.H = _tm->tm_hour;
+	Etime.M = _tm->tm_min;
+	Etime.S = _tm->tm_sec;
 	return Etime;
 }
 
