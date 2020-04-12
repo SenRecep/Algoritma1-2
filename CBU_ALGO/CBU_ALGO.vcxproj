@@ -147,8 +147,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DBYsoru1.c" />
+    <ClCompile Include="DBYsoru2.c" />
     <ClCompile Include="Soru1.c" />
     <ClCompile Include="Soru2.c" />
+    <ClCompile Include="YusufSoru1.c" />
+    <ClCompile Include="YusufSoru2.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,14 +1,22 @@
+#pragma region Definitions
 #define _CRT_SECURE_NO_WARNINGS
+#define Number_Of_Cars_To_Be_Added_First 5
+#define MaximumCapasity 1000
+#define StringLenght_1 25
+#define StringLenght_2 12  
+#pragma endregion
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
 #pragma region Types
 
 typedef struct {
-	char* Plaque;
-	char* Model;
-	char* Color;
+	char Plaque[StringLenght_2];
+	char Model[StringLenght_1];
+	char Color[StringLenght_1];
 }Car;
 typedef struct {
 	unsigned short H;
@@ -16,104 +24,117 @@ typedef struct {
 	unsigned short S;
 }EntryTime;
 typedef struct {
-	Car* cars;
-	EntryTime* times;
-	size_t	Capacity;
-	size_t Used;
-	size_t UsableCapacity;
+	Car car;
+	EntryTime time;
+
 }ParkingRegistration;
+
+typedef struct {
+	ParkingRegistration ParkingRegistrations[MaximumCapasity];
+	size_t Used;
+}CarPark;
 
 #pragma endregion
 #pragma region Headers
-void InitializingCarPark(ParkingRegistration*, int, int);
-void InitializingCar(Car*);
-char* AddCar(ParkingRegistration*);
-void AddCars(ParkingRegistration*, Car*);
-void ListCar(ParkingRegistration*);
+void Menu(CarPark);
+CarPark CarAddMenu(CarPark);
+CarPark AddCar(CarPark, Car);
+CarPark AddCars(CarPark, int);
+void ListCar(CarPark);
 EntryTime GetCurrentTime();
-void Free(ParkingRegistration*, Car*);
-void FreeCar(Car*);
 #pragma endregion
 void main() {
-#pragma region Fields
-	Car model;
-	Car* ptrmodel = &model;
-	ParkingRegistration pR;
-	ParkingRegistration* ptrPR = &pR;
-#pragma endregion
-	InitializingCarPark(ptrPR, 5, 1000);
-	InitializingCar(ptrmodel);
-	AddCars(ptrPR, ptrmodel);
-	ListCar(ptrPR);
-	Free(ptrPR, ptrmodel);
-	system("PAUSE");
+	CarPark cp; cp.Used = 0;
+	Menu(cp);
 	exit(1);
 }
 #pragma region Methods
-void InitializingCarPark(ParkingRegistration* pR, int usableCapacity, int Capacity) {
-	pR->Capacity = Capacity;
-	pR->Used = 0;
-	pR->UsableCapacity = usableCapacity;
-	pR->cars = (Car*)malloc(usableCapacity * sizeof(Car));
-	pR->times = (EntryTime*)malloc(usableCapacity * sizeof(EntryTime));
-}
-
-char* AddCar(ParkingRegistration* pR, Car* car) {
-	Car model; InitializingCar(&model);
-	strcpy(model.Color, car->Color); strcpy(model.Plaque, car->Plaque); strcpy(model.Model, car->Model);
-	if (pR->Used >= pR->Capacity)
-		return "Uzgunuz Otopark tamamen dolu\n";
-	if (pR->Used == pR->UsableCapacity)
+void Menu(CarPark cP) {
+	while (1)
 	{
-		pR->cars = (Car*)realloc(pR->cars, (++pR->UsableCapacity) * sizeof(Car));
-		pR->times = (EntryTime*)realloc(pR->times, (pR->UsableCapacity) * sizeof(EntryTime));
-	}
-
-	pR->times[pR->Used] = GetCurrentTime();
-	pR->cars[pR->Used++] = model;
-	return "";
-}
-
-void AddCars(ParkingRegistration* pR, Car* model) {
-	printf("Otoparkimiza Hosgeldiniz\n____________________________\nEn fazla Renk icin 24 Model icin 24 Plaka icin 11 karakter girisi yapiniz.\n\n");
-	for (unsigned short i = 0; i < pR->UsableCapacity; i++)
-	{
-		printf("%d.Arac bilgilerini giriniz:\n____________________________\n", i + 1);
-		printf("Araba Renk:");
-		scanf("%s", model->Color);
-		printf("Araba Model:");
-		scanf("%s", model->Model);
-		printf("Araba Plaka:");
-		scanf("%s", model->Plaque);
-		char* res = AddCar(pR, model);
-		if (strlen(res) > 0) {
-			printf("\n%sSon eklediginiz arac sisteme eklenememistir.\n", res);
-			system("PAUSE");
+		system("cls");
+		printf("***************\n");
+		printf("* 1-Arac Ekle *\n");
+		printf("* 2-Listele   *\n");
+		printf("* 3-Cikis     *\n");
+		printf("***************\n");
+		printf("Toplam Arac Sayisi: %d\n", cP.Used);
+		printf("Seciminizi yapiniz [1-3]: ");
+		char c[5] = "";
+		gets(c);
+		system("cls");
+		switch (c[0])
+		{
+		case '1':
+			cP = CarAddMenu(cP);
 			break;
+		case '2':
+			ListCar(cP);
+			break;
+		case '3':
+			printf("Iyi gunler\n");
+			return;
 		}
+		system("PAUSE");
 	}
+
 }
 
-void InitializingCar(Car* model) {
-	model->Color = (char*)malloc(sizeof(char) * 25);
-	model->Model = (char*)malloc(sizeof(char) * 25);
-	model->Plaque = (char*)malloc(sizeof(char) * 12);
+CarPark CarAddMenu(CarPark cP) {
+	char strcount[5];
+	int count;
+	printf("Kac araba eklemek istiyorsunuz?: ");
+	gets(strcount);
+	count = atoi(strcount);
+	cP = AddCars(cP, count);
+	return cP;
 }
 
-void ListCar(ParkingRegistration* pR) {
-	system("cls");
+CarPark AddCar(CarPark cP, Car model) {
+	if (cP.Used >= MaximumCapasity)
+		printf("Uzgunuz Otopark tamamen dolu\nSon eklediginiz arac sisteme eklenememistir.");
+	else
+	{
+		ParkingRegistration pr;
+		pr.car = model;
+		pr.time = GetCurrentTime();
+		cP.ParkingRegistrations[cP.Used++] = pr;
+	}
+	return cP;
+}
+
+CarPark AddCars(CarPark cP, int count) {
+	printf("Otoparkimiza Hosgeldiniz\n____________________________\nEn fazla Renk icin 24 Model icin 24 Plaka icin 11 karakter girisi yapiniz.\n\n");
+	int loop = cP.Used + count;
+	if (loop == 0) loop = Number_Of_Cars_To_Be_Added_First;
+	for (unsigned short i = cP.Used; i < loop; i++)
+	{
+		Car model;
+		printf("\n%d.Arac bilgilerini giriniz:\n____________________________\n", i + 1);
+		printf("Araba Renk:");
+		gets(model.Color);
+		printf("Araba Model:");
+		gets(model.Model);
+		printf("Araba Plaka:");
+		gets(model.Plaque);
+		cP = AddCar(cP, model);
+	}
+	return cP;
+}
+
+void ListCar(CarPark carpark) {
 	printf("%31s%s\n", "", "Otoparkimiza Hosgeldiniz");
 	printf("____________________________________________________________________________\n");
 	printf("%-25s %-25s %-12s %s", "RENK", "MODEL", "PLAKA", "GIRIS SAATI\n");
 	printf("____________________________________________________________________________\n");
-	for (size_t i = 0; i < pR->Used; i++)
+	for (size_t i = 0; i < carpark.Used; i++)
 		printf("%-25s %-25s %-12s %d:%d:%d\n",
-			pR->cars[i].Color,
-			pR->cars[i].Model,
-			pR->cars[i].Plaque,
-			pR->times[i].H,
-			pR->times[i].M,
-			pR->times[i].S
+			carpark.ParkingRegistrations[i].car.Color,
+			carpark.ParkingRegistrations[i].car.Model,
+			carpark.ParkingRegistrations[i].car.Plaque,
+			carpark.ParkingRegistrations[i].time.H,
+			carpark.ParkingRegistrations[i].time.M,
+			carpark.ParkingRegistrations[i].time.S
 		);
 }
 
@@ -125,19 +146,5 @@ EntryTime GetCurrentTime() {
 	Etime.M = _tm->tm_min;
 	Etime.S = _tm->tm_sec;
 	return Etime;
-}
-
-void FreeCar(Car* car) {
-	free(car->Color);
-	free(car->Model);
-	free(car->Plaque);
-}
-
-void Free(ParkingRegistration* model, Car* car) {
-	FreeCar(car);
-	free(model->cars);
-	free(model->times);
-	model->Capacity = model->UsableCapacity = model->Used = 0;
-	model->cars = model->times = NULL;
 }
 #pragma endregion
